@@ -1,0 +1,91 @@
+name: Android Smoke (Appium + WDIO)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  smoke:
+    runs-on: macos-13  # macOS runners have hardware accel + emulator images prepped
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Setup Java (for Android SDK tools)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android SDK + create AVD
+        env:
+          ANDROID_SDK_ROOT: ${{ runner.temp }}/android-sdk
+        run: |
+          brew install --cask android-commandlinetools
+          export ANDROID_HOME="$ANDROID_SDK_ROOT"
+          export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
+          yes | sdkmanager --licenses
+          sdkmanager "platform-tools" "platforms;android-34" "emulator" "system-images;android-34;google_apis;x86_64"
+          avdmanager create avd -n ciPixel -k "system-images;android-34;google_apis;x86_64" --device "pixel"
+          $ANDROID_HOME/emulator/emulator -list-avds
+
+      - name: Boot emulator (headless)
+        env:
+          ANDROID_SDK_ROOT: ${{ runner.temp }}/android-sdk
+        run: |
+          export ANDROID_HOME="$ANDROID_SDK_ROOT"
+          export PATH="$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH"
+          nohup emulator -avd ciPixel -no-window -no-boot-anim -gpu swiftshader_indirect -camera-back none -camera-front none -no-snapshot -wipe-data > /dev/null 2>&1 &
+          # wait for boot complete
+          adb wait-for-device
+          bootcomplete=""
+          until [ "$bootcomplete" = "1" ]; do
+            bootcomplete=$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')
+            sleep 2
+          done
+          adb shell input keyevent 82
+
+      - name: Verify network
+        run: adb shell 'cmd connectivity diag' || true
+
+      - name: Run smoke tests (WDIO)
+        env:
+          WDIO_MAX_INSTANCES: "1"
+        run: npm run ci:test
+
+      - name: Generate Allure report
+        run: npm run ci:report
+
+      - name: Upload allure-results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-results
+          path: allure-results
+
+      - name: Upload allure-report (HTML)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-report
+          path: allure-report
