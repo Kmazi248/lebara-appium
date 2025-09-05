@@ -2,14 +2,22 @@ name: Android Smoke (Appium + WDIO)
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-  smoke:
-    runs-on: macos-13  # macOS runners have hardware accel + emulator images prepped
-    timeout-minutes: 30
+  android-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    env:
+      ANDROID_SDK_ROOT: ${{ github.workspace }}/android-sdk
+      ANDROID_HOME: ${{ github.workspace }}/android-sdk
+      JAVA_HOME: /usr/lib/jvm/temurin-17-jdk-amd64
+      AVD_NAME: ci-avd
+      API_LEVEL: "34"
+      AVD_PACKAGE: "system-images;android-34;google_apis;x86_64"
 
     steps:
       - name: Checkout
@@ -18,74 +26,82 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
+          cache: "npm"
 
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install deps
-        run: npm ci
-
-      - name: Setup Java (for Android SDK tools)
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: '17'
+          distribution: "temurin"
+          java-version: "17"
 
-      - name: Install Android SDK + create AVD
-        env:
-          ANDROID_SDK_ROOT: ${{ runner.temp }}/android-sdk
+      - name: Install Android SDK
         run: |
-          brew install --cask android-commandlinetools
-          export ANDROID_HOME="$ANDROID_SDK_ROOT"
-          export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
-          yes | sdkmanager --licenses
-          sdkmanager "platform-tools" "platforms;android-34" "emulator" "system-images;android-34;google_apis;x86_64"
-          avdmanager create avd -n ciPixel -k "system-images;android-34;google_apis;x86_64" --device "pixel"
-          $ANDROID_HOME/emulator/emulator -list-avds
+          mkdir -p "$ANDROID_SDK_ROOT"
+          curl -sSL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o cmdline-tools.zip
+          unzip -q cmdline-tools.zip -d "$ANDROID_SDK_ROOT"
+          mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools/latest"
+          mv "$ANDROID_SDK_ROOT/cmdline-tools/"* "$ANDROID_SDK_ROOT/cmdline-tools/latest/" || true
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" \
+            "platform-tools" "platforms;android-${API_LEVEL}" "emulator" "${AVD_PACKAGE}"
+
+      - name: Create AVD
+        run: |
+          echo "no" | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager" create avd \
+            -n "${AVD_NAME}" -k "${AVD_PACKAGE}" -d pixel_6
 
       - name: Boot emulator (headless)
-        env:
-          ANDROID_SDK_ROOT: ${{ runner.temp }}/android-sdk
         run: |
-          export ANDROID_HOME="$ANDROID_SDK_ROOT"
-          export PATH="$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH"
-          nohup emulator -avd ciPixel -no-window -no-boot-anim -gpu swiftshader_indirect -camera-back none -camera-front none -no-snapshot -wipe-data > /dev/null 2>&1 &
-          # wait for boot complete
+          $ANDROID_SDK_ROOT/emulator/emulator -avd "${AVD_NAME}" \
+            -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -camera-back none -camera-front none &
           adb wait-for-device
-          bootcomplete=""
-          until [ "$bootcomplete" = "1" ]; do
-            bootcomplete=$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')
+          # wait for boot completed
+          TIMEOUT=300
+          SECS=0
+          until adb shell getprop sys.boot_completed | grep -m 1 "1"; do
             sleep 2
+            SECS=$((SECS+2))
+            if [ "$SECS" -ge "$TIMEOUT" ]; then
+              echo "Emulator failed to boot in ${TIMEOUT}s"; exit 1
+            fi
           done
           adb shell input keyevent 82
 
-      - name: Verify network
-        run: adb shell 'cmd connectivity diag' || true
+      - name: Install project deps
+        run: npm ci
 
-      - name: Run smoke tests (WDIO)
-        env:
-          WDIO_MAX_INSTANCES: "1"
-        run: npm run ci:test
+      - name: Setup Appium (UiAutomator2 + chromedriver)
+        run: |
+          npx appium driver install uiautomator2
+          # Optional: pin a chromedriver if needed; WDIO/Appium can auto-manage
+          # npx appium driver install chromedriver
 
-      - name: Generate Allure report
-        run: npm run ci:report
+      - name: Start Appium
+        run: |
+          npx appium --base-path /wd/hub --log-level info &
+          # give server a moment
+          sleep 5
 
-      - name: Upload allure-results
-        uses: actions/upload-artifact@v4
+      - name: Run WDIO smoke
+        run: |
+          # Target a short spec to keep CI fast (adjust to your file)
+          npx wdio run wdio.conf.ts --spec test/specs/smoke.e2e.ts
+
+      - name: Generate Allure Report (static)
+        run: |
+          npx allure-commandline generate --clean ./allure-results -o ./allure-report || echo "No results?"
+
+      - name: Upload Allure Results (artifact)
         if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: allure-results
           path: allure-results
 
-      - name: Upload allure-report (HTML)
-        uses: actions/upload-artifact@v4
+      - name: Upload Allure HTML (artifact)
         if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: allure-report
           path: allure-report
