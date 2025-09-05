@@ -1,0 +1,28 @@
+# Node / tooling
+node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+
+# Build + coverage
+dist/
+build/
+.tmp/
+tmp/
+coverage/
+*.tsbuildinfo
+
+# Test outputs
+reports/
+allure-results/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Env / secrets
+.env
+*.local
