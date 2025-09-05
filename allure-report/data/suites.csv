@@ -1,6 +1,0 @@
-"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","6234","adds item to cart and opens cart","","Tue Sep 02 17:14:54 BST 2025","passed","Tue Sep 02 17:15:00 BST 2025","","cart flow","",""
-"","2005","logsd in as standard user","","Tue Sep 02 17:15:12 BST 2025","broken","Tue Sep 02 17:15:14 BST 2025","","login flow","",""
-"","1916","opens login and sees username","","Tue Sep 02 17:15:26 BST 2025","passed","Tue Sep 02 17:15:27 BST 2025","","SOM scaffold","",""
-"","4888","should login with valid credentials","","Tue Sep 02 17:15:49 BST 2025","passed","Tue Sep 02 17:15:54 BST 2025","","My Login application","",""
-"","418","boots a session and sees the screen","","Tue Sep 02 17:15:38 BST 2025","passed","Tue Sep 02 17:15:39 BST 2025","","Smoke — start Android session","",""
