@@ -13,7 +13,8 @@
     "test:debug": "cross-env WDIO_LOG_LEVEL=debug wdio run ./wdio.conf.ts",
     "test:web": "wdio run ./wdio.conf.ts",
     "ci:test": "cross-env CI=true WDIO_MAX_INSTANCES=1 wdio run ./wdio.conf.ts",
-    "ci:report": "allure generate --clean allure-results -o allure-report"
+    "ci:report": "allure generate --clean allure-results -o allure-report",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
@@ -31,6 +32,9 @@
     "appium": "^3.0.1",
     "appium-uiautomator2-driver": "^5.0.0",
     "cross-env": "^10.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.6",
+    "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2",
     "webdriverio": "^9.19.2"
