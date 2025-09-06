@@ -1,49 +1,55 @@
-import type { Options } from '@wdio/types';
-import allure from '@wdio/allure-reporter';
-import { androidWebCaps } from './src/config/caps.android.web';
+import type { Options } from "@wdio/types";
+import allure from "@wdio/allure-reporter";
+import { androidWebCaps } from "./src/config/caps.android.web";
+import { androidNativeCaps } from "./src/config/caps.android.native";
+
+const CI = process.env.CI === "true";
+const TARGET = (process.env.TARGET ?? "native") as "native" | "web";
 
 export const config: Options.Testrunner = {
-  runner: 'local',
-  tsConfigPath: './tsconfig.json',
+  runner: "local",
 
-  // specs
-  specs: ['./test/specs/**/*.ts'],
+  specs: ["./test/specs/**/*.ts"],
   exclude: [],
 
-  // services
-  services: [['appium', { args: { relaxedSecurity: true } }]],
+  // Use Appium service locally; in CI we connect to the server the workflow starts
+  services: CI ? [] : [["appium", { args: { relaxedSecurity: true } }]],
 
-  // ✅ WDIO expects an array here
-  capabilities: [androidWebCaps],
+  // Only set these in CI so we point to the Action's Appium server
+  ...(CI ? { hostname: "127.0.0.1", port: 4723, path: "/wd/hub" } : {}),
 
-  // timeouts / retries
-  logLevel: 'info',
-  bail: 0,
+  maxInstances: 1,
+  logLevel: "info",
   waitforTimeout: 10_000,
   connectionRetryTimeout: 120_000,
   connectionRetryCount: 3,
 
-  // framework
-  framework: 'mocha',
-  mochaOpts: { ui: 'bdd', timeout: 60_000 },
-maxInstances: 1,
+  framework: "mocha",
+  mochaOpts: { ui: "bdd", timeout: 60_000 },
 
-  // reporters
+  // ✅ pass a single array of caps
+  capabilities: TARGET === "web" ? androidWebCaps : androidNativeCaps,
+
   reporters: [
-    'spec',
-    ['allure', {
-      outputDir: 'allure-results',
-      disableWebdriverStepsReporting: true,
-      // We’ll attach screenshots manually in afterTest
-      disableWebdriverScreenshotsReporting: true
-    }]
+    "spec",
+    [
+      "allure",
+      {
+        outputDir: "allure-results",
+        disableWebdriverStepsReporting: true,
+        disableWebdriverScreenshotsReporting: true,
+      },
+    ],
   ],
 
-  // 📸 attach screenshot on failure to Allure
-  afterTest: async function (_test, _context, { passed }) {
+  afterTest: async (_test, _ctx, { passed }) => {
     if (!passed) {
       const png = await browser.takeScreenshot();
-      allure.addAttachment('screenshot', Buffer.from(png, 'base64'), 'image/png');
+      allure.addAttachment(
+        "screenshot",
+        Buffer.from(png, "base64"),
+        "image/png",
+      );
     }
-  }
+  },
 };

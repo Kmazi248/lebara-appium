@@ -38,21 +38,37 @@ jobs:
           "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" \
             "platform-tools" "platforms;android-${API_LEVEL}" "emulator" "${AVD_PACKAGE}"
 
+      - name: Add Android tools to PATH
+        run: |
+          echo "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          echo "$ANDROID_SDK_ROOT/platform-tools"           >> $GITHUB_PATH
+          echo "$ANDROID_SDK_ROOT/emulator"                >> $GITHUB_PATH
+          which adb || true
+          which emulator || true
+
       - name: Create AVD
         run: |
           echo "no" | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager" create avd \
-            -n "${AVD_NAME}" -k "${AVD_PACKAGE}" -d pixel_6
+            -n "${AVD_NAME}" -k "${AVD_PACKAGE}" --device "pixel_6" --force
+      - name: Verify AVD exists
+        run: |
+          avdmanager list avd || true
+          echo "---- files in \$HOME/.android/avd ----"
+          ls -la "$HOME/.android/avd" || true
 
       - name: Boot emulator (headless)
         run: |
-          $ANDROID_SDK_ROOT/emulator/emulator -avd "${AVD_NAME}" \
-            -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -camera-back none -camera-front none &
+          adb start-server
+          nohup emulator -avd "${AVD_NAME}" \
+            -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect \
+            -camera-back none -camera-front none >/dev/null 2>&1 &
           adb wait-for-device
-          TIMEOUT=360; SECS=0
+          TIMEOUT=420; SECS=0
           until adb shell getprop sys.boot_completed | grep -m 1 "1"; do
             sleep 2; SECS=$((SECS+2)); [ "$SECS" -ge "$TIMEOUT" ] && { echo "Emu boot timeout"; exit 1; }
           done
           adb shell input keyevent 82
+          adb devices
 
       - name: Install Appium UiAutomator2 driver
         run: npx appium driver install uiautomator2
@@ -99,17 +115,27 @@ jobs:
           "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" \
             "platform-tools" "platforms;android-${API_LEVEL}" "emulator" "${AVD_PACKAGE}"
 
+      - name: Add Android tools to PATH
+        run: |
+          echo "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          echo "$ANDROID_SDK_ROOT/platform-tools"           >> $GITHUB_PATH
+          echo "$ANDROID_SDK_ROOT/emulator"                >> $GITHUB_PATH
+          which adb || true
+          which emulator || true
+
       - name: Create AVD
         run: |
           echo "no" | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager" create avd \
-            -n "${AVD_NAME}" -k "${AVD_PACKAGE}" -d pixel_6
+            -n "${AVD_NAME}" -k "${AVD_PACKAGE}" --device "pixel_6" --force
 
       - name: Boot emulator (headless)
         run: |
-          $ANDROID_SDK_ROOT/emulator/emulator -avd "${AVD_NAME}" \
-            -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -camera-back none -camera-front none &
+          adb start-server
+          nohup emulator -avd "${AVD_NAME}" \
+            -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect \
+            -camera-back none -camera-front none >/dev/null 2>&1 &
           adb wait-for-device
-          TIMEOUT=360; SECS=0
+          TIMEOUT=420; SECS=0
           until adb shell getprop sys.boot_completed | grep -m 1 "1"; do
             sleep 2; SECS=$((SECS+2)); [ "$SECS" -ge "$TIMEOUT" ] && { echo "Emu boot timeout"; exit 1; }
           done
