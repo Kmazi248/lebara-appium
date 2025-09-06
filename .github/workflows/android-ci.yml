@@ -1,0 +1,147 @@
+name: Android CI (native + web)
+
+on:
+  push: { branches: [main] }
+  pull_request: { branches: [main] }
+  workflow_dispatch: {}
+
+env:
+  ANDROID_SDK_ROOT: ${{ github.workspace }}/android-sdk
+  ANDROID_HOME: ${{ github.workspace }}/android-sdk
+  JAVA_HOME: /usr/lib/jvm/temurin-17-jdk-amd64
+  AVD_NAME: ci-avd
+  API_LEVEL: "34"
+  AVD_PACKAGE: "system-images;android-34;google_apis;x86_64"
+
+jobs:
+  native:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "20", cache: "npm" }
+      - uses: actions/setup-java@v4
+        with: { distribution: "temurin", java-version: "17" }
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Android SDK + image
+        run: |
+          mkdir -p "$ANDROID_SDK_ROOT"
+          curl -sSL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o cmdline-tools.zip
+          unzip -q cmdline-tools.zip -d "$ANDROID_SDK_ROOT"
+          mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools/latest"
+          mv "$ANDROID_SDK_ROOT/cmdline-tools/"* "$ANDROID_SDK_ROOT/cmdline-tools/latest/" || true
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" \
+            "platform-tools" "platforms;android-${API_LEVEL}" "emulator" "${AVD_PACKAGE}"
+
+      - name: Create AVD
+        run: |
+          echo "no" | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager" create avd \
+            -n "${AVD_NAME}" -k "${AVD_PACKAGE}" -d pixel_6
+
+      - name: Boot emulator (headless)
+        run: |
+          $ANDROID_SDK_ROOT/emulator/emulator -avd "${AVD_NAME}" \
+            -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -camera-back none -camera-front none &
+          adb wait-for-device
+          TIMEOUT=360; SECS=0
+          until adb shell getprop sys.boot_completed | grep -m 1 "1"; do
+            sleep 2; SECS=$((SECS+2)); [ "$SECS" -ge "$TIMEOUT" ] && { echo "Emu boot timeout"; exit 1; }
+          done
+          adb shell input keyevent 82
+
+      - name: Install Appium UiAutomator2 driver
+        run: npx appium driver install uiautomator2
+
+      - name: Start Appium
+        run: npx appium --base-path /wd/hub --log-level info &
+
+      - name: Run native smoke
+        env: { TARGET: native }
+        run: npx wdio run wdio.conf.ts --spec test/specs/smoke.native.e2e.ts
+
+      - name: Generate Allure (native)
+        if: ${{ hashFiles('allure-results/**') != '' }}
+        run: npx allure-commandline generate --clean ./allure-results -o ./allure-report
+      - uses: actions/upload-artifact@v4
+        if: ${{ hashFiles('allure-results/**') != '' }}
+        with: { name: native-allure-results, path: allure-results }
+      - uses: actions/upload-artifact@v4
+        if: ${{ hashFiles('allure-report/**') != '' }}
+        with: { name: native-allure-report, path: allure-report }
+
+  web:
+    runs-on: ubuntu-latest
+    needs: native
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "20", cache: "npm" }
+      - uses: actions/setup-java@v4
+        with: { distribution: "temurin", java-version: "17" }
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Android SDK + image
+        run: |
+          mkdir -p "$ANDROID_SDK_ROOT"
+          curl -sSL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o cmdline-tools.zip
+          unzip -q cmdline-tools.zip -d "$ANDROID_SDK_ROOT"
+          mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools/latest"
+          mv "$ANDROID_SDK_ROOT/cmdline-tools/"* "$ANDROID_SDK_ROOT/cmdline-tools/latest/" || true
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" \
+            "platform-tools" "platforms;android-${API_LEVEL}" "emulator" "${AVD_PACKAGE}"
+
+      - name: Create AVD
+        run: |
+          echo "no" | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager" create avd \
+            -n "${AVD_NAME}" -k "${AVD_PACKAGE}" -d pixel_6
+
+      - name: Boot emulator (headless)
+        run: |
+          $ANDROID_SDK_ROOT/emulator/emulator -avd "${AVD_NAME}" \
+            -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -camera-back none -camera-front none &
+          adb wait-for-device
+          TIMEOUT=360; SECS=0
+          until adb shell getprop sys.boot_completed | grep -m 1 "1"; do
+            sleep 2; SECS=$((SECS+2)); [ "$SECS" -ge "$TIMEOUT" ] && { echo "Emu boot timeout"; exit 1; }
+          done
+          adb shell input keyevent 82
+
+      - name: Appium chromedriver plugin
+        run: npx appium plugin install --source=npm appium-chromedriver
+
+      - name: Start Appium (with chromedriver)
+        run: npx appium --use-plugins=chromedriver --base-path /wd/hub --log-level info &
+
+      - name: Ensure Chrome on emulator (single APK)
+        env:
+          CHROME_APK_URL: ${{ secrets.CHROME_APK_URL }}
+        run: |
+          adb shell pm list packages | grep -q com.android.chrome || {
+            [ -z "$CHROME_APK_URL" ] && { echo "Missing CHROME_APK_URL secret"; exit 1; }
+            curl -L -o chrome.apk "$CHROME_APK_URL"
+            adb install -r chrome.apk
+          }
+          adb shell pm list packages | grep com.android.chrome
+
+      - name: Run web smoke
+        env: { TARGET: web }
+        run: npx wdio run wdio.conf.ts --spec test/specs/smoke.web.e2e.ts
+
+      - name: Generate Allure (web)
+        if: ${{ hashFiles('allure-results/**') != '' }}
+        run: npx allure-commandline generate --clean ./allure-results -o ./allure-report
+      - uses: actions/upload-artifact@v4
+        if: ${{ hashFiles('allure-results/**') != '' }}
+        with: { name: web-allure-results, path: allure-results }
+      - uses: actions/upload-artifact@v4
+        if: ${{ hashFiles('allure-report/**') != '' }}
+        with: { name: web-allure-report, path: allure-report }
