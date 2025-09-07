@@ -40,9 +40,9 @@ jobs:
           emulator-boot-timeout: 1200
           emulator-options: -no-window -no-boot-anim -no-audio -camera-back none -camera-front none
           script: |
-            if ! npx appium driver list --installed | grep -q uiautomator2; then
-              npx appium driver install uiautomator2
-            fi
+            # Defensive guard: install only if not already present
+            npx appium driver list --installed | grep -q uiautomator2 || npx appium driver install uiautomator2 || true
+
             npx appium --base-path /wd/hub --log-level info & sleep 6
             adb devices
             npx wdio run wdio.conf.ts --spec test/specs/smoke.native.e2e.ts
@@ -123,12 +123,12 @@ jobs:
             fi
             adb shell pm list packages | grep com.android.chrome
 
-            if ! npx appium driver list --installed | grep -q uiautomator2; then
-              npx appium driver install uiautomator2
-            fi
-            npx appium plugin install --source=npm appium-chromedriver
+            # Defensive guard for UiAutomator2 driver
+            npx appium driver list --installed | grep -q uiautomator2 || npx appium driver install uiautomator2 || true
 
+            npx appium plugin install --source=npm appium-chromedriver
             npx appium --use-plugins=chromedriver --base-path /wd/hub --log-level info & sleep 6
+
             adb devices
             npx wdio run wdio.conf.ts --spec test/specs/smoke.web.e2e.ts
 
