@@ -9,7 +9,7 @@ on:
 
 jobs:
   native:
-    runs-on: ubuntu-latest
+    runs-on: macos-13
     timeout-minutes: 60
 
     steps:
@@ -31,16 +31,18 @@ jobs:
       - name: Boot emulator + run native smoke
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
+          api-level: 30
           target: default
           arch: x86
-          profile: pixel_4
+          profile: pixel_5
           force-avd-creation: true
           disable-animations: true
           emulator-boot-timeout: 1200
-          emulator-options: -no-window -no-boot-anim -gpu swiftshader_indirect -camera-back none -camera-front none
+          emulator-options: -no-window -no-boot-anim -no-audio -camera-back none -camera-front none
           script: |
-            npx appium driver install uiautomator2
+            if ! npx appium driver list --installed | grep -q uiautomator2; then
+              npx appium driver install uiautomator2
+            fi
             npx appium --base-path /wd/hub --log-level info & sleep 6
             adb devices
             npx wdio run wdio.conf.ts --spec test/specs/smoke.native.e2e.ts
@@ -69,7 +71,6 @@ jobs:
           adb devices || true
           adb logcat -d > adb-logcat.txt || true
           adb shell getprop > adb-getprop.txt || true
-        shell: bash
 
       - name: Upload debug logs (native)
         if: ${{ always() }}
@@ -81,7 +82,7 @@ jobs:
             adb-getprop.txt
 
   web:
-    runs-on: ubuntu-latest
+    runs-on: macos-13
     needs: native
     timeout-minutes: 75
 
@@ -106,14 +107,14 @@ jobs:
         env:
           CHROME_APK_URL: ${{ secrets.CHROME_APK_URL }}
         with:
-          api-level: 29
+          api-level: 30
           target: default
           arch: x86
-          profile: pixel_4
+          profile: pixel_5
           force-avd-creation: true
           disable-animations: true
           emulator-boot-timeout: 1200
-          emulator-options: -no-window -no-boot-anim -gpu swiftshader_indirect -camera-back none -camera-front none
+          emulator-options: -no-window -no-boot-anim -no-audio -camera-back none -camera-front none
           script: |
             if ! adb shell pm list packages | grep -q com.android.chrome; then
               test -n "${CHROME_APK_URL}" || { echo "Missing CHROME_APK_URL secret"; exit 1; }
@@ -122,9 +123,12 @@ jobs:
             fi
             adb shell pm list packages | grep com.android.chrome
 
+            if ! npx appium driver list --installed | grep -q uiautomator2; then
+              npx appium driver install uiautomator2
+            fi
             npx appium plugin install --source=npm appium-chromedriver
-            npx appium --use-plugins=chromedriver --base-path /wd/hub --log-level info & sleep 6
 
+            npx appium --use-plugins=chromedriver --base-path /wd/hub --log-level info & sleep 6
             adb devices
             npx wdio run wdio.conf.ts --spec test/specs/smoke.web.e2e.ts
 
@@ -152,7 +156,6 @@ jobs:
           adb devices || true
           adb logcat -d > adb-logcat.txt || true
           adb shell getprop > adb-getprop.txt || true
-        shell: bash
 
       - name: Upload debug logs (web)
         if: ${{ always() }}
