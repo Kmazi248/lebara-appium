@@ -1,1 +1,26 @@
-{"uuid":"397b2e32-392c-4583-935b-1b5703a2c7ad","historyId":"3f9b6d68e7ed528f5d3ca0091ffd0e5e","status":"passed","statusDetails":{},"stage":"finished","steps":[],"attachments":[],"parameters":[{"name":"device","value":"chrome"}],"labels":[{"name":"language","value":"javascript"},{"name":"framework","value":"wdio"},{"name":"package","value":"C:.Users.Karl.Mazi.Documents.Appium.codeset.lebara-appium.test.specs.login.flow.e2e.ts"},{"name":"thread","value":"0-1"},{"name":"suite","value":"login flow"},{"name":"feature","value":"login flow"}],"links":[],"start":1756827416111,"name":"logsd in as standard user","testCaseId":"3f9b6d68e7ed528f5d3ca0091ffd0e5e","stop":1756827419293}
+{
+  "uuid": "397b2e32-392c-4583-935b-1b5703a2c7ad",
+  "historyId": "3f9b6d68e7ed528f5d3ca0091ffd0e5e",
+  "status": "passed",
+  "statusDetails": {},
+  "stage": "finished",
+  "steps": [],
+  "attachments": [],
+  "parameters": [{ "name": "device", "value": "chrome" }],
+  "labels": [
+    { "name": "language", "value": "javascript" },
+    { "name": "framework", "value": "wdio" },
+    {
+      "name": "package",
+      "value": "C:.Users.Karl.Mazi.Documents.Appium.codeset.lebara-appium.test.specs.login.flow.e2e.ts"
+    },
+    { "name": "thread", "value": "0-1" },
+    { "name": "suite", "value": "login flow" },
+    { "name": "feature", "value": "login flow" }
+  ],
+  "links": [],
+  "start": 1756827416111,
+  "name": "logsd in as standard user",
+  "testCaseId": "3f9b6d68e7ed528f5d3ca0091ffd0e5e",
+  "stop": 1756827419293
+}

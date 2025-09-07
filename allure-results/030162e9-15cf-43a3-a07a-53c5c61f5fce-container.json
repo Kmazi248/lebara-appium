@@ -1,1 +1,7 @@
-{"uuid":"030162e9-15cf-43a3-a07a-53c5c61f5fce","children":["bc609e81-212a-4644-8b2b-1e171d3ae6ae"],"befores":[],"afters":[],"name":"My Login application"}
+{
+  "uuid": "030162e9-15cf-43a3-a07a-53c5c61f5fce",
+  "children": ["bc609e81-212a-4644-8b2b-1e171d3ae6ae"],
+  "befores": [],
+  "afters": [],
+  "name": "My Login application"
+}

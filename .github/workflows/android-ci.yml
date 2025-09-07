@@ -1,235 +1,164 @@
 name: Android CI (native + web)
 
 on:
-  push: { branches: [main] }
-  pull_request: { branches: [main] }
-  workflow_dispatch: {}
-
-env:
-  ANDROID_SDK_ROOT: ${{ github.workspace }}/android-sdk
-  ANDROID_HOME: ${{ github.workspace }}/android-sdk
-  JAVA_HOME: /usr/lib/jvm/temurin-17-jdk-amd64
-  AVD_NAME: ci-avd
-  API_LEVEL: "34"
-  AVD_PACKAGE: "system-images;android-34;google_apis;x86_64"
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   native:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
-        with: { node-version: "20", cache: "npm" }
+        with:
+          node-version: "20"
+          cache: "npm"
+
       - uses: actions/setup-java@v4
-        with: { distribution: "temurin", java-version: "17" }
+        with:
+          distribution: "temurin"
+          java-version: "17"
 
       - name: Install deps
         run: npm ci
 
-      - name: Android SDK + image
-        run: |
-          mkdir -p "$ANDROID_SDK_ROOT"
-          curl -sSL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o cmdline-tools.zip
-          unzip -q cmdline-tools.zip -d "$ANDROID_SDK_ROOT"
-          mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools/latest"
-          mv "$ANDROID_SDK_ROOT/cmdline-tools/"* "$ANDROID_SDK_ROOT/cmdline-tools/latest/" || true
-          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses
-          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" \
-            "platform-tools" "platforms;android-${API_LEVEL}" "emulator" "${AVD_PACKAGE}"
-
-      - name: Add Android tools to PATH
-        run: |
-          echo "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" >> $GITHUB_PATH
-          echo "$ANDROID_SDK_ROOT/platform-tools"           >> $GITHUB_PATH
-          echo "$ANDROID_SDK_ROOT/emulator"                >> $GITHUB_PATH
-          which adb || true
-          which emulator || true
-
-      - name: Set AVD home (stable path)
-        run: |
-          mkdir -p "$HOME/.android/avd"
-          echo "ANDROID_AVD_HOME=$HOME/.android/avd" >> $GITHUB_ENV
-          echo "Using ANDROID_AVD_HOME=$HOME/.android/avd"
-
-      - name: Create AVD
-        run: |
-          echo "no" | avdmanager create avd \
-            -n "${AVD_NAME}" -k "${AVD_PACKAGE}" --device "pixel_6" --force
-
-      - name: Verify AVD exists
-        run: |
-          avdmanager list avd || true
-          echo "---- files in \$HOME/.android/avd ----"
-          ls -la "$HOME/.android/avd" || true
-
-      - name: Boot emulator (headless)
-        run: |
-          set -e
-          adb start-server
-
-          # Start emulator with safe flags for CI
-          nohup emulator -avd "${AVD_NAME}" \
-            -no-window -no-audio -no-boot-anim \
-            -no-snapshot -wipe-data \
-            -gpu swiftshader_indirect -accel off \
-            -camera-back none -camera-front none > emulator.log 2>&1 &
-
-          echo "Checking emulator process…"
-          TIMEOUT=120; SECS=0
-          until pgrep -f "emulator.*-avd ${AVD_NAME}" >/dev/null; do
-            sleep 2; SECS=$((SECS+2))
-            if [ "$SECS" -ge "$TIMEOUT" ]; then
-              echo "Emulator process failed to start:"
-              tail -n 200 emulator.log || true
-              exit 1
-            fi
-          done
-          echo "Emulator process is running."
-
-          echo "Waiting for device to appear in adb…"
-          TIMEOUT=240; SECS=0
-          until adb devices | awk 'NR>1 && $2=="device"{print $1}' | grep -E "emulator-[0-9]+"; do
-            sleep 2; SECS=$((SECS+2))
-            if (( SECS % 10 == 0 )); then adb devices; fi
-            if [ "$SECS" -ge "$TIMEOUT" ]; then
-              echo "Device never appeared in adb."
-              tail -n 200 emulator.log || true
-              exit 1
-            fi
-          done
-          SERIAL=$(adb devices | awk 'NR>1 && $2=="device"{print $1}' | head -n1)
-          echo "Device detected: $SERIAL"
-
-          echo "Monitoring boot completion…"
-          TIMEOUT=600; SECS=0
-          until adb -s "$SERIAL" shell getprop sys.boot_completed | grep -m 1 "1"; do
-            sleep 2; SECS=$((SECS+2))
-            if (( SECS % 10 == 0 )); then echo "… still booting (${SECS}s)"; fi
-            if [ "$SECS" -ge "$TIMEOUT" ]; then
-              echo "Emulator boot timeout"
-              tail -n 200 emulator.log || true
-              exit 1
-            fi
-          done
-
-          adb -s "$SERIAL" shell input keyevent 82
-          adb devices
-          echo "Last 60 lines of emulator.log:"
-          tail -n 60 emulator.log || true
-
-      - name: Install Appium UiAutomator2 driver
-        run: npx appium driver install uiautomator2
-
-      - name: Start Appium
-        run: npx appium --base-path /wd/hub --log-level info &
-
-      - name: Run native smoke
-        env: { TARGET: native }
-        run: npx wdio run wdio.conf.ts --spec test/specs/smoke.native.e2e.ts
+      - name: Boot emulator + run native smoke
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 31
+          target: google_apis
+          arch: x86_64
+          profile: pixel_5
+          force-avd-creation: true
+          disable-animations: true
+          emulator-boot-timeout: 900
+          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -no-boot-anim -camera-back none -camera-front none
+          script: |
+            npx appium driver install uiautomator2
+            npx appium --base-path /wd/hub --log-level info & sleep 6
+            adb devices
+            npx wdio run wdio.conf.ts --spec test/specs/smoke.native.e2e.ts
 
       - name: Generate Allure (native)
         if: ${{ hashFiles('allure-results/**') != '' }}
         run: npx allure-commandline generate --clean ./allure-results -o ./allure-report
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload Allure results (native)
         if: ${{ hashFiles('allure-results/**') != '' }}
-        with: { name: native-allure-results, path: allure-results }
-      - uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-allure-results
+          path: allure-results
+
+      - name: Upload Allure report (native)
         if: ${{ hashFiles('allure-report/**') != '' }}
-        with: { name: native-allure-report, path: allure-report }
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-allure-report
+          path: allure-report
+
+      - name: Collect diagnostics (native)
+        if: ${{ failure() }}
+        run: |
+          adb logcat -d > native-logcat.txt || true
+          adb shell getprop > native-getprop.txt || true
+        shell: bash
+
+      - name: Upload diagnostics (native)
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-diagnostics
+          path: |
+            native-logcat.txt
+            native-getprop.txt
 
   web:
     runs-on: ubuntu-latest
     needs: native
     timeout-minutes: 75
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
-        with: { node-version: "20", cache: "npm" }
+        with:
+          node-version: "20"
+          cache: "npm"
+
       - uses: actions/setup-java@v4
-        with: { distribution: "temurin", java-version: "17" }
+        with:
+          distribution: "temurin"
+          java-version: "17"
 
       - name: Install deps
         run: npm ci
 
-      - name: Android SDK + image
-        run: |
-          mkdir -p "$ANDROID_SDK_ROOT"
-          curl -sSL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o cmdline-tools.zip
-          unzip -q cmdline-tools.zip -d "$ANDROID_SDK_ROOT"
-          mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools/latest"
-          mv "$ANDROID_SDK_ROOT/cmdline-tools/"* "$ANDROID_SDK_ROOT/cmdline-tools/latest/" || true
-          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses
-          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" \
-            "platform-tools" "platforms;android-${API_LEVEL}" "emulator" "${AVD_PACKAGE}"
-
-      - name: Add Android tools to PATH
-        run: |
-          echo "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" >> $GITHUB_PATH
-          echo "$ANDROID_SDK_ROOT/platform-tools"           >> $GITHUB_PATH
-          echo "$ANDROID_SDK_ROOT/emulator"                >> $GITHUB_PATH
-
-      - name: Create AVD
-        run: |
-          echo "no" | avdmanager create avd \
-            -n "${AVD_NAME}" -k "${AVD_PACKAGE}" --device "pixel_6" --force
-
-      - name: Boot emulator (headless)
-        run: |
-          set -e
-          adb start-server
-          nohup emulator -avd "${AVD_NAME}" \
-            -no-window -no-audio -no-boot-anim \
-            -no-snapshot -wipe-data \
-            -gpu swiftshader_indirect -accel off \
-            -camera-back none -camera-front none > emulator.log 2>&1 &
-
-          TIMEOUT=120; SECS=0
-          until pgrep -f "emulator.*-avd ${AVD_NAME}" >/dev/null; do
-            sleep 2; SECS=$((SECS+2)); [ "$SECS" -ge "$TIMEOUT" ] && { echo "emulator process didn't start"; tail -n 200 emulator.log || true; exit 1; }
-          done
-
-          TIMEOUT=240; SECS=0
-          until adb devices | awk 'NR>1 && $2=="device"{print $1}' | grep -E "emulator-[0-9]+"; do
-            sleep 2; SECS=$((SECS+2)); (( SECS % 10 == 0 )) && adb devices
-            [ "$SECS" -ge "$TIMEOUT" ] && { echo "device not in adb"; tail -n 200 emulator.log || true; exit 1; }
-          done
-          SERIAL=$(adb devices | awk 'NR>1 && $2=="device"{print $1}' | head -n1)
-
-          TIMEOUT=600; SECS=0
-          until adb -s "$SERIAL" shell getprop sys.boot_completed | grep -m 1 "1"; do
-            sleep 2; SECS=$((SECS+2)); (( SECS % 10 == 0 )) && echo "… still booting (${SECS}s)"
-            [ "$SECS" -ge "$TIMEOUT" ] && { echo "boot timeout"; tail -n 200 emulator.log || true; exit 1; }
-          done
-          adb -s "$SERIAL" shell input keyevent 82
-
-      - name: Appium chromedriver plugin
-        run: npx appium plugin install --source=npm appium-chromedriver
-
-      - name: Start Appium (with chromedriver)
-        run: npx appium --use-plugins=chromedriver --base-path /wd/hub --log-level info &
-
-      - name: Ensure Chrome on emulator (single APK)
+      - name: Boot emulator + run web smoke
+        uses: reactivecircus/android-emulator-runner@v2
         env:
           CHROME_APK_URL: ${{ secrets.CHROME_APK_URL }}
-        run: |
-          adb shell pm list packages | grep -q com.android.chrome || {
-            [ -z "$CHROME_APK_URL" ] && { echo "Missing CHROME_APK_URL secret"; exit 1; }
-            curl -L -o chrome.apk "$CHROME_APK_URL"
-            adb install -r chrome.apk
-          }
-          adb shell pm list packages | grep com.android.chrome
+        with:
+          api-level: 31
+          target: google_apis
+          arch: x86_64
+          profile: pixel_5
+          force-avd-creation: true
+          disable-animations: true
+          emulator-boot-timeout: 900
+          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -no-boot-anim -camera-back none -camera-front none
+          script: |
+            # Ensure Chrome present
+            if ! adb shell pm list packages | grep -q com.android.chrome; then
+              test -n "${CHROME_APK_URL}" || { echo "Missing CHROME_APK_URL secret"; exit 1; }
+              curl -L -o chrome.apk "${CHROME_APK_URL}"
+              adb install -r chrome.apk
+            fi
+            adb shell pm list packages | grep com.android.chrome
 
-      - name: Run web smoke
-        env: { TARGET: web }
-        run: npx wdio run wdio.conf.ts --spec test/specs/smoke.web.e2e.ts
+            # Start Appium with chromedriver plugin
+            npx appium plugin install --source=npm appium-chromedriver
+            npx appium --use-plugins=chromedriver --base-path /wd/hub --log-level info & sleep 6
+
+            adb devices
+            npx wdio run wdio.conf.ts --spec test/specs/smoke.web.e2e.ts
 
       - name: Generate Allure (web)
         if: ${{ hashFiles('allure-results/**') != '' }}
         run: npx allure-commandline generate --clean ./allure-results -o ./allure-report
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload Allure results (web)
         if: ${{ hashFiles('allure-results/**') != '' }}
-        with: { name: web-allure-results, path: allure-results }
-      - uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-allure-results
+          path: allure-results
+
+      - name: Upload Allure report (web)
         if: ${{ hashFiles('allure-report/**') != '' }}
-        with: { name: web-allure-report, path: allure-report }
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-allure-report
+          path: allure-report
+
+      - name: Collect diagnostics (web)
+        if: ${{ failure() }}
+        run: |
+          adb logcat -d > web-logcat.txt || true
+          adb shell getprop > web-getprop.txt || true
+        shell: bash
+
+      - name: Upload diagnostics (web)
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-diagnostics
+          path: |
+            web-logcat.txt
+            web-getprop.txt

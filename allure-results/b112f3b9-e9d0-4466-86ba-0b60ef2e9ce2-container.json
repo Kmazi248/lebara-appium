@@ -1,1 +1,7 @@
-{"uuid":"b112f3b9-e9d0-4466-86ba-0b60ef2e9ce2","children":["0efa9d13-a185-4f61-aa04-5eac70e12537"],"befores":[],"afters":[],"name":"Smoke — start Android session"}
+{
+  "uuid": "b112f3b9-e9d0-4466-86ba-0b60ef2e9ce2",
+  "children": ["0efa9d13-a185-4f61-aa04-5eac70e12537"],
+  "befores": [],
+  "afters": [],
+  "name": "Smoke — start Android session"
+}

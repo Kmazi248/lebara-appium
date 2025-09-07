@@ -1,1 +1,58 @@
-{"uid":"c70db35b151454f7","name":"boots a session and sees the screen","historyId":"fa27512dcc37477103f0b850964fa987","time":{"start":1756829738753,"stop":1756829739171,"duration":418},"status":"passed","flaky":false,"newFailed":false,"newBroken":false,"newPassed":false,"retriesCount":2,"retriesStatusChange":false,"beforeStages":[],"afterStages":[],"labels":[{"name":"language","value":"javascript"},{"name":"framework","value":"wdio"},{"name":"package","value":"C:.Users.Karl.Mazi.Documents.Appium.codeset.lebara-appium.test.specs.smoke.e2e.ts"},{"name":"thread","value":"0-3"},{"name":"suite","value":"Smoke — start Android session"},{"name":"feature","value":"Smoke — start Android session"},{"name":"resultFormat","value":"allure2"}],"parameters":[{"name":"device","value":"chrome"}],"links":[],"hidden":false,"retry":false,"extra":{"severity":"normal","retries":[{"uid":"5ac205784756d425","status":"passed","time":{"start":1756829347601,"stop":1756829347998,"duration":397}},{"uid":"8dd2d9128df50e8e","status":"passed","time":{"start":1756827435131,"stop":1756827435548,"duration":417}}],"categories":[],"tags":[]},"source":"c70db35b151454f7.json","parameterValues":["chrome"]}
+{
+  "uid": "c70db35b151454f7",
+  "name": "boots a session and sees the screen",
+  "historyId": "fa27512dcc37477103f0b850964fa987",
+  "time": { "start": 1756829738753, "stop": 1756829739171, "duration": 418 },
+  "status": "passed",
+  "flaky": false,
+  "newFailed": false,
+  "newBroken": false,
+  "newPassed": false,
+  "retriesCount": 2,
+  "retriesStatusChange": false,
+  "beforeStages": [],
+  "afterStages": [],
+  "labels": [
+    { "name": "language", "value": "javascript" },
+    { "name": "framework", "value": "wdio" },
+    {
+      "name": "package",
+      "value": "C:.Users.Karl.Mazi.Documents.Appium.codeset.lebara-appium.test.specs.smoke.e2e.ts"
+    },
+    { "name": "thread", "value": "0-3" },
+    { "name": "suite", "value": "Smoke — start Android session" },
+    { "name": "feature", "value": "Smoke — start Android session" },
+    { "name": "resultFormat", "value": "allure2" }
+  ],
+  "parameters": [{ "name": "device", "value": "chrome" }],
+  "links": [],
+  "hidden": false,
+  "retry": false,
+  "extra": {
+    "severity": "normal",
+    "retries": [
+      {
+        "uid": "5ac205784756d425",
+        "status": "passed",
+        "time": {
+          "start": 1756829347601,
+          "stop": 1756829347998,
+          "duration": 397
+        }
+      },
+      {
+        "uid": "8dd2d9128df50e8e",
+        "status": "passed",
+        "time": {
+          "start": 1756827435131,
+          "stop": 1756827435548,
+          "duration": 417
+        }
+      }
+    ],
+    "categories": [],
+    "tags": []
+  },
+  "source": "c70db35b151454f7.json",
+  "parameterValues": ["chrome"]
+}

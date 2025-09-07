@@ -1,1 +1,7 @@
-{"uuid":"916691bf-ca52-469a-be60-20f0c7fc10e0","children":["6cca2358-538a-4f0f-baf2-b5dd3158d393"],"befores":[],"afters":[],"name":"SOM scaffold"}
+{
+  "uuid": "916691bf-ca52-469a-be60-20f0c7fc10e0",
+  "children": ["6cca2358-538a-4f0f-baf2-b5dd3158d393"],
+  "befores": [],
+  "afters": [],
+  "name": "SOM scaffold"
+}

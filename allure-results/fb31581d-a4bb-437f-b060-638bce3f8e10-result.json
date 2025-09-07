@@ -1,1 +1,35 @@
-{"uuid":"fb31581d-a4bb-437f-b060-638bce3f8e10","historyId":"f0ee264c90022a796ad91569d7a0658a","status":"failed","statusDetails":{"message":"expect(received).toContain(expected) // indexOf\n\nExpected substring: \"settings\"\nReceived string:    \"com.google.android.apps.nexuslauncher\"","trace":"Error: expect(received).toContain(expected) // indexOf\n\nExpected substring: \"settings\"\nReceived string:    \"com.google.android.apps.nexuslauncher\"\n    at Context.<anonymous> (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\test\\specs\\smoke.native.e2e.ts:13:31)\n    at async Context.executeAsync (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:1101:20)\n    at async Context.testFrameworkFnWrapper (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:1173:14)"},"stage":"finished","steps":[],"attachments":[{"name":"screenshot","type":"image/png","source":"e0147aee-7447-4177-9c8e-cf52f28c350e-attachment.png"}],"parameters":[{"name":"device","value":"Pixel_8"}],"labels":[{"name":"language","value":"javascript"},{"name":"framework","value":"wdio"},{"name":"package","value":"C:.Users.Karl.Mazi.Documents.Appium.codeset.lebara-appium.test.specs.smoke.native.e2e.ts"},{"name":"thread","value":"0-0"},{"name":"suite","value":"Android native smoke"},{"name":"feature","value":"Android native smoke"}],"links":[],"start":1757072901140,"name":"starts Settings and confirms package","testCaseId":"f0ee264c90022a796ad91569d7a0658a","stop":1757072904002}
+{
+  "uuid": "fb31581d-a4bb-437f-b060-638bce3f8e10",
+  "historyId": "f0ee264c90022a796ad91569d7a0658a",
+  "status": "failed",
+  "statusDetails": {
+    "message": "expect(received).toContain(expected) // indexOf\n\nExpected substring: \"settings\"\nReceived string:    \"com.google.android.apps.nexuslauncher\"",
+    "trace": "Error: expect(received).toContain(expected) // indexOf\n\nExpected substring: \"settings\"\nReceived string:    \"com.google.android.apps.nexuslauncher\"\n    at Context.<anonymous> (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\test\\specs\\smoke.native.e2e.ts:13:31)\n    at async Context.executeAsync (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:1101:20)\n    at async Context.testFrameworkFnWrapper (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:1173:14)"
+  },
+  "stage": "finished",
+  "steps": [],
+  "attachments": [
+    {
+      "name": "screenshot",
+      "type": "image/png",
+      "source": "e0147aee-7447-4177-9c8e-cf52f28c350e-attachment.png"
+    }
+  ],
+  "parameters": [{ "name": "device", "value": "Pixel_8" }],
+  "labels": [
+    { "name": "language", "value": "javascript" },
+    { "name": "framework", "value": "wdio" },
+    {
+      "name": "package",
+      "value": "C:.Users.Karl.Mazi.Documents.Appium.codeset.lebara-appium.test.specs.smoke.native.e2e.ts"
+    },
+    { "name": "thread", "value": "0-0" },
+    { "name": "suite", "value": "Android native smoke" },
+    { "name": "feature", "value": "Android native smoke" }
+  ],
+  "links": [],
+  "start": 1757072901140,
+  "name": "starts Settings and confirms package",
+  "testCaseId": "f0ee264c90022a796ad91569d7a0658a",
+  "stop": 1757072904002
+}

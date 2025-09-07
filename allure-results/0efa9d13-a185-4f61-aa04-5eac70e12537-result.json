@@ -1,1 +1,26 @@
-{"uuid":"0efa9d13-a185-4f61-aa04-5eac70e12537","historyId":"fa27512dcc37477103f0b850964fa987","status":"passed","statusDetails":{},"stage":"finished","steps":[],"attachments":[],"parameters":[{"name":"device","value":"chrome"}],"labels":[{"name":"language","value":"javascript"},{"name":"framework","value":"wdio"},{"name":"package","value":"C:.Users.Karl.Mazi.Documents.Appium.codeset.lebara-appium.test.specs.smoke.e2e.ts"},{"name":"thread","value":"0-3"},{"name":"suite","value":"Smoke — start Android session"},{"name":"feature","value":"Smoke — start Android session"}],"links":[],"start":1756827435131,"name":"boots a session and sees the screen","testCaseId":"fa27512dcc37477103f0b850964fa987","stop":1756827435548}
+{
+  "uuid": "0efa9d13-a185-4f61-aa04-5eac70e12537",
+  "historyId": "fa27512dcc37477103f0b850964fa987",
+  "status": "passed",
+  "statusDetails": {},
+  "stage": "finished",
+  "steps": [],
+  "attachments": [],
+  "parameters": [{ "name": "device", "value": "chrome" }],
+  "labels": [
+    { "name": "language", "value": "javascript" },
+    { "name": "framework", "value": "wdio" },
+    {
+      "name": "package",
+      "value": "C:.Users.Karl.Mazi.Documents.Appium.codeset.lebara-appium.test.specs.smoke.e2e.ts"
+    },
+    { "name": "thread", "value": "0-3" },
+    { "name": "suite", "value": "Smoke — start Android session" },
+    { "name": "feature", "value": "Smoke — start Android session" }
+  ],
+  "links": [],
+  "start": 1756827435131,
+  "name": "boots a session and sees the screen",
+  "testCaseId": "fa27512dcc37477103f0b850964fa987",
+  "stop": 1756827435548
+}

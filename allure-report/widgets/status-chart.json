@@ -1,1 +1,37 @@
-[{"uid":"386002325f1f7494","name":"adds item to cart and opens cart","time":{"start":1756829694375,"stop":1756829700609,"duration":6234},"status":"passed","severity":"normal"},{"uid":"1f4dbe0836229728","name":"logsd in as standard user","time":{"start":1756829712538,"stop":1756829714543,"duration":2005},"status":"broken","severity":"normal"},{"uid":"db5a5f71a1d52903","name":"opens login and sees username","time":{"start":1756829726082,"stop":1756829727998,"duration":1916},"status":"passed","severity":"normal"},{"uid":"6a2147fd6f71484c","name":"should login with valid credentials","time":{"start":1756829749682,"stop":1756829754570,"duration":4888},"status":"passed","severity":"normal"},{"uid":"c70db35b151454f7","name":"boots a session and sees the screen","time":{"start":1756829738753,"stop":1756829739171,"duration":418},"status":"passed","severity":"normal"}]
+[
+  {
+    "uid": "386002325f1f7494",
+    "name": "adds item to cart and opens cart",
+    "time": { "start": 1756829694375, "stop": 1756829700609, "duration": 6234 },
+    "status": "passed",
+    "severity": "normal"
+  },
+  {
+    "uid": "1f4dbe0836229728",
+    "name": "logsd in as standard user",
+    "time": { "start": 1756829712538, "stop": 1756829714543, "duration": 2005 },
+    "status": "broken",
+    "severity": "normal"
+  },
+  {
+    "uid": "db5a5f71a1d52903",
+    "name": "opens login and sees username",
+    "time": { "start": 1756829726082, "stop": 1756829727998, "duration": 1916 },
+    "status": "passed",
+    "severity": "normal"
+  },
+  {
+    "uid": "6a2147fd6f71484c",
+    "name": "should login with valid credentials",
+    "time": { "start": 1756829749682, "stop": 1756829754570, "duration": 4888 },
+    "status": "passed",
+    "severity": "normal"
+  },
+  {
+    "uid": "c70db35b151454f7",
+    "name": "boots a session and sees the screen",
+    "time": { "start": 1756829738753, "stop": 1756829739171, "duration": 418 },
+    "status": "passed",
+    "severity": "normal"
+  }
+]

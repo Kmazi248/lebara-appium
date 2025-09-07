@@ -1,1 +1,7 @@
-{"uuid":"acff4a9d-8e28-41de-801f-7468d5003351","children":["6c4aec91-16f1-4fe5-93ab-7f073bfd1745"],"befores":[],"afters":[],"name":"login flow"}
+{
+  "uuid": "acff4a9d-8e28-41de-801f-7468d5003351",
+  "children": ["6c4aec91-16f1-4fe5-93ab-7f073bfd1745"],
+  "befores": [],
+  "afters": [],
+  "name": "login flow"
+}

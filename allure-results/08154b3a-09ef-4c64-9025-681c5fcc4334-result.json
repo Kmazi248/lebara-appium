@@ -1,1 +1,26 @@
-{"uuid":"08154b3a-09ef-4c64-9025-681c5fcc4334","historyId":"1125874aaefde139659e310019589f82","status":"passed","statusDetails":{},"stage":"finished","steps":[],"attachments":[],"parameters":[{"name":"device","value":"Pixel_8"}],"labels":[{"name":"language","value":"javascript"},{"name":"framework","value":"wdio"},{"name":"package","value":"C:.Users.Karl.Mazi.Documents.Appium.codeset.lebara-appium.test.specs.smoke.native.e2e.ts"},{"name":"thread","value":"0-0"},{"name":"suite","value":"Android native smoke"},{"name":"feature","value":"Android native smoke"}],"links":[],"start":1757073047038,"name":"opens Settings and confirms package","testCaseId":"1125874aaefde139659e310019589f82","stop":1757073051068}
+{
+  "uuid": "08154b3a-09ef-4c64-9025-681c5fcc4334",
+  "historyId": "1125874aaefde139659e310019589f82",
+  "status": "passed",
+  "statusDetails": {},
+  "stage": "finished",
+  "steps": [],
+  "attachments": [],
+  "parameters": [{ "name": "device", "value": "Pixel_8" }],
+  "labels": [
+    { "name": "language", "value": "javascript" },
+    { "name": "framework", "value": "wdio" },
+    {
+      "name": "package",
+      "value": "C:.Users.Karl.Mazi.Documents.Appium.codeset.lebara-appium.test.specs.smoke.native.e2e.ts"
+    },
+    { "name": "thread", "value": "0-0" },
+    { "name": "suite", "value": "Android native smoke" },
+    { "name": "feature", "value": "Android native smoke" }
+  ],
+  "links": [],
+  "start": 1757073047038,
+  "name": "opens Settings and confirms package",
+  "testCaseId": "1125874aaefde139659e310019589f82",
+  "stop": 1757073051068
+}

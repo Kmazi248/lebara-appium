@@ -1,1 +1,108 @@
-{"ba86dcd055edf4566909d8321da746af":{"statistic":{"failed":0,"broken":0,"skipped":0,"passed":1,"unknown":0,"total":1},"items":[{"uid":"386002325f1f7494","status":"passed","time":{"start":1756829694375,"stop":1756829700609,"duration":6234}}]},"fa27512dcc37477103f0b850964fa987":{"statistic":{"failed":0,"broken":0,"skipped":0,"passed":1,"unknown":0,"total":1},"items":[{"uid":"c70db35b151454f7","status":"passed","time":{"start":1756829738753,"stop":1756829739171,"duration":418}}]},"e4220eaa347840d2726ff543e1dbaf06":{"statistic":{"failed":0,"broken":0,"skipped":0,"passed":1,"unknown":0,"total":1},"items":[{"uid":"db5a5f71a1d52903","status":"passed","time":{"start":1756829726082,"stop":1756829727998,"duration":1916}}]},"e2052d8086a80eba17b7e6c7667ae852":{"statistic":{"failed":0,"broken":0,"skipped":0,"passed":1,"unknown":0,"total":1},"items":[{"uid":"6a2147fd6f71484c","status":"passed","time":{"start":1756829749682,"stop":1756829754570,"duration":4888}}]},"3f9b6d68e7ed528f5d3ca0091ffd0e5e":{"statistic":{"failed":0,"broken":1,"skipped":0,"passed":0,"unknown":0,"total":1},"items":[{"uid":"1f4dbe0836229728","status":"broken","statusDetails":"Cannot read properties of undefined (reading 'username')","time":{"start":1756829712538,"stop":1756829714543,"duration":2005}}]}}
+{
+  "ba86dcd055edf4566909d8321da746af": {
+    "statistic": {
+      "failed": 0,
+      "broken": 0,
+      "skipped": 0,
+      "passed": 1,
+      "unknown": 0,
+      "total": 1
+    },
+    "items": [
+      {
+        "uid": "386002325f1f7494",
+        "status": "passed",
+        "time": {
+          "start": 1756829694375,
+          "stop": 1756829700609,
+          "duration": 6234
+        }
+      }
+    ]
+  },
+  "fa27512dcc37477103f0b850964fa987": {
+    "statistic": {
+      "failed": 0,
+      "broken": 0,
+      "skipped": 0,
+      "passed": 1,
+      "unknown": 0,
+      "total": 1
+    },
+    "items": [
+      {
+        "uid": "c70db35b151454f7",
+        "status": "passed",
+        "time": {
+          "start": 1756829738753,
+          "stop": 1756829739171,
+          "duration": 418
+        }
+      }
+    ]
+  },
+  "e4220eaa347840d2726ff543e1dbaf06": {
+    "statistic": {
+      "failed": 0,
+      "broken": 0,
+      "skipped": 0,
+      "passed": 1,
+      "unknown": 0,
+      "total": 1
+    },
+    "items": [
+      {
+        "uid": "db5a5f71a1d52903",
+        "status": "passed",
+        "time": {
+          "start": 1756829726082,
+          "stop": 1756829727998,
+          "duration": 1916
+        }
+      }
+    ]
+  },
+  "e2052d8086a80eba17b7e6c7667ae852": {
+    "statistic": {
+      "failed": 0,
+      "broken": 0,
+      "skipped": 0,
+      "passed": 1,
+      "unknown": 0,
+      "total": 1
+    },
+    "items": [
+      {
+        "uid": "6a2147fd6f71484c",
+        "status": "passed",
+        "time": {
+          "start": 1756829749682,
+          "stop": 1756829754570,
+          "duration": 4888
+        }
+      }
+    ]
+  },
+  "3f9b6d68e7ed528f5d3ca0091ffd0e5e": {
+    "statistic": {
+      "failed": 0,
+      "broken": 1,
+      "skipped": 0,
+      "passed": 0,
+      "unknown": 0,
+      "total": 1
+    },
+    "items": [
+      {
+        "uid": "1f4dbe0836229728",
+        "status": "broken",
+        "statusDetails": "Cannot read properties of undefined (reading 'username')",
+        "time": {
+          "start": 1756829712538,
+          "stop": 1756829714543,
+          "duration": 2005
+        }
+      }
+    ]
+  }
+}

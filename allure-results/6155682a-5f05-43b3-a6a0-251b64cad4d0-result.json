@@ -1,1 +1,35 @@
-{"uuid":"6155682a-5f05-43b3-a6a0-251b64cad4d0","historyId":"afed7a457f41079fc4a545b04abeaad2","status":"broken","statusDetails":{"message":"WebDriverError: Error attempting to start URI. Original error: Error: Error executing adbExec. Original error: 'Command ''C:\\Users\\Karl.Mazi\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe' -P 5037 -s emulator-5554 shell am start -W -a android.intent.action.VIEW -d '\"data:text/html,<html><body id=\"\"root\"\">OK</body></html>\"' com.android.settings' exited with code 1'; Command output: Starting: Intent { act=android.intent.action.VIEW dat=data: pkg=com.android.settings }\r\nError: Activity not started, unable to resolve Intent { act=android.intent.action.VIEW dat=data: flg=0x10000000 xflg=0x4 pkg=com.android.settings }\r\n when running \"url\" with method \"POST\" and args \"{\"url\":\"data:text/html,<html><body id=\\\"root\\\">OK</body></html>\"}\"","trace":"unknown error: WebDriverError: Error attempting to start URI. Original error: Error: Error executing adbExec. Original error: 'Command ''C:\\Users\\Karl.Mazi\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe' -P 5037 -s emulator-5554 shell am start -W -a android.intent.action.VIEW -d '\"data:text/html,<html><body id=\"\"root\"\">OK</body></html>\"' com.android.settings' exited with code 1'; Command output: Starting: Intent { act=android.intent.action.VIEW dat=data: pkg=com.android.settings }\r\nError: Activity not started, unable to resolve Intent { act=android.intent.action.VIEW dat=data: flg=0x10000000 xflg=0x4 pkg=com.android.settings }\r\n when running \"url\" with method \"POST\" and args \"{\"url\":\"data:text/html,<html><body id=\\\"root\\\">OK</body></html>\"}\"\n    at async Browser.wrapCommandFn (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:978:23)\n    at async Browser.url (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\webdriverio\\build\\node.js:5710:3)\n    at async Browser.wrapCommandFn (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:978:23)\n    at async Context.<anonymous> (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\test\\specs\\smoke.native.e2e.ts:7:5)\n    at async Context.executeAsync (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:1101:20)\n    at async Context.testFrameworkFnWrapper (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:1173:14)"},"stage":"finished","steps":[],"attachments":[{"name":"screenshot","type":"image/png","source":"10162d76-39e7-4c91-8f24-810b35ea5539-attachment.png"}],"parameters":[{"name":"device","value":"Android Emulator"}],"labels":[{"name":"language","value":"javascript"},{"name":"framework","value":"wdio"},{"name":"package","value":"C:.Users.Karl.Mazi.Documents.Appium.codeset.lebara-appium.test.specs.smoke.native.e2e.ts"},{"name":"thread","value":"0-0"},{"name":"suite","value":"Smoke — start Android session"},{"name":"feature","value":"Smoke — start Android session"}],"links":[],"start":1757072489218,"name":"boots a session and sees the screen","testCaseId":"afed7a457f41079fc4a545b04abeaad2","stop":1757072493270}
+{
+  "uuid": "6155682a-5f05-43b3-a6a0-251b64cad4d0",
+  "historyId": "afed7a457f41079fc4a545b04abeaad2",
+  "status": "broken",
+  "statusDetails": {
+    "message": "WebDriverError: Error attempting to start URI. Original error: Error: Error executing adbExec. Original error: 'Command ''C:\\Users\\Karl.Mazi\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe' -P 5037 -s emulator-5554 shell am start -W -a android.intent.action.VIEW -d '\"data:text/html,<html><body id=\"\"root\"\">OK</body></html>\"' com.android.settings' exited with code 1'; Command output: Starting: Intent { act=android.intent.action.VIEW dat=data: pkg=com.android.settings }\r\nError: Activity not started, unable to resolve Intent { act=android.intent.action.VIEW dat=data: flg=0x10000000 xflg=0x4 pkg=com.android.settings }\r\n when running \"url\" with method \"POST\" and args \"{\"url\":\"data:text/html,<html><body id=\\\"root\\\">OK</body></html>\"}\"",
+    "trace": "unknown error: WebDriverError: Error attempting to start URI. Original error: Error: Error executing adbExec. Original error: 'Command ''C:\\Users\\Karl.Mazi\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe' -P 5037 -s emulator-5554 shell am start -W -a android.intent.action.VIEW -d '\"data:text/html,<html><body id=\"\"root\"\">OK</body></html>\"' com.android.settings' exited with code 1'; Command output: Starting: Intent { act=android.intent.action.VIEW dat=data: pkg=com.android.settings }\r\nError: Activity not started, unable to resolve Intent { act=android.intent.action.VIEW dat=data: flg=0x10000000 xflg=0x4 pkg=com.android.settings }\r\n when running \"url\" with method \"POST\" and args \"{\"url\":\"data:text/html,<html><body id=\\\"root\\\">OK</body></html>\"}\"\n    at async Browser.wrapCommandFn (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:978:23)\n    at async Browser.url (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\webdriverio\\build\\node.js:5710:3)\n    at async Browser.wrapCommandFn (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:978:23)\n    at async Context.<anonymous> (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\test\\specs\\smoke.native.e2e.ts:7:5)\n    at async Context.executeAsync (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:1101:20)\n    at async Context.testFrameworkFnWrapper (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:1173:14)"
+  },
+  "stage": "finished",
+  "steps": [],
+  "attachments": [
+    {
+      "name": "screenshot",
+      "type": "image/png",
+      "source": "10162d76-39e7-4c91-8f24-810b35ea5539-attachment.png"
+    }
+  ],
+  "parameters": [{ "name": "device", "value": "Android Emulator" }],
+  "labels": [
+    { "name": "language", "value": "javascript" },
+    { "name": "framework", "value": "wdio" },
+    {
+      "name": "package",
+      "value": "C:.Users.Karl.Mazi.Documents.Appium.codeset.lebara-appium.test.specs.smoke.native.e2e.ts"
+    },
+    { "name": "thread", "value": "0-0" },
+    { "name": "suite", "value": "Smoke — start Android session" },
+    { "name": "feature", "value": "Smoke — start Android session" }
+  ],
+  "links": [],
+  "start": 1757072489218,
+  "name": "boots a session and sees the screen",
+  "testCaseId": "afed7a457f41079fc4a545b04abeaad2",
+  "stop": 1757072493270
+}
