@@ -31,14 +31,14 @@ jobs:
       - name: Boot emulator + run native smoke
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 31
-          target: google_apis
-          arch: x86_64
-          profile: pixel_5
+          api-level: 29
+          target: default
+          arch: x86
+          profile: pixel_4
           force-avd-creation: true
           disable-animations: true
-          emulator-boot-timeout: 900
-          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -no-boot-anim -camera-back none -camera-front none
+          emulator-boot-timeout: 1200
+          emulator-options: -no-window -no-boot-anim -gpu swiftshader_indirect -camera-back none -camera-front none
           script: |
             npx appium driver install uiautomator2
             npx appium --base-path /wd/hub --log-level info & sleep 6
@@ -63,21 +63,22 @@ jobs:
           name: native-allure-report
           path: allure-report
 
-      - name: Collect diagnostics (native)
-        if: ${{ failure() }}
+      - name: Collect emulator/adb logs (native)
+        if: ${{ always() }}
         run: |
-          adb logcat -d > native-logcat.txt || true
-          adb shell getprop > native-getprop.txt || true
+          adb devices || true
+          adb logcat -d > adb-logcat.txt || true
+          adb shell getprop > adb-getprop.txt || true
         shell: bash
 
-      - name: Upload diagnostics (native)
-        if: ${{ failure() }}
+      - name: Upload debug logs (native)
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: native-diagnostics
+          name: native-debug
           path: |
-            native-logcat.txt
-            native-getprop.txt
+            adb-logcat.txt
+            adb-getprop.txt
 
   web:
     runs-on: ubuntu-latest
@@ -105,16 +106,15 @@ jobs:
         env:
           CHROME_APK_URL: ${{ secrets.CHROME_APK_URL }}
         with:
-          api-level: 31
-          target: google_apis
-          arch: x86_64
-          profile: pixel_5
+          api-level: 29
+          target: default
+          arch: x86
+          profile: pixel_4
           force-avd-creation: true
           disable-animations: true
-          emulator-boot-timeout: 900
-          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -no-boot-anim -camera-back none -camera-front none
+          emulator-boot-timeout: 1200
+          emulator-options: -no-window -no-boot-anim -gpu swiftshader_indirect -camera-back none -camera-front none
           script: |
-            # Ensure Chrome present
             if ! adb shell pm list packages | grep -q com.android.chrome; then
               test -n "${CHROME_APK_URL}" || { echo "Missing CHROME_APK_URL secret"; exit 1; }
               curl -L -o chrome.apk "${CHROME_APK_URL}"
@@ -122,7 +122,6 @@ jobs:
             fi
             adb shell pm list packages | grep com.android.chrome
 
-            # Start Appium with chromedriver plugin
             npx appium plugin install --source=npm appium-chromedriver
             npx appium --use-plugins=chromedriver --base-path /wd/hub --log-level info & sleep 6
 
@@ -147,18 +146,19 @@ jobs:
           name: web-allure-report
           path: allure-report
 
-      - name: Collect diagnostics (web)
-        if: ${{ failure() }}
+      - name: Collect emulator/adb logs (web)
+        if: ${{ always() }}
         run: |
-          adb logcat -d > web-logcat.txt || true
-          adb shell getprop > web-getprop.txt || true
+          adb devices || true
+          adb logcat -d > adb-logcat.txt || true
+          adb shell getprop > adb-getprop.txt || true
         shell: bash
 
-      - name: Upload diagnostics (web)
-        if: ${{ failure() }}
+      - name: Upload debug logs (web)
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: web-diagnostics
+          name: web-debug
           path: |
-            web-logcat.txt
-            web-getprop.txt
+            adb-logcat.txt
+            adb-getprop.txt
