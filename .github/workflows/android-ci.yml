@@ -34,7 +34,8 @@ jobs:
           api-level: 34
           target: google_apis
           arch: x86_64
-          profile: pixel_8
+          profile: pixel_5
+          avd-name: Pixel_5 # <- add this so the created AVD is named "Pixel_5"
           force-avd-creation: true
           disable-animations: true
           emulator-boot-timeout: 1200
