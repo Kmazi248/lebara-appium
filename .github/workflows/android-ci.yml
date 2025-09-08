@@ -35,29 +35,31 @@ jobs:
           target: google_apis
           arch: x86_64
           profile: pixel_5
-          avd-name: Pixel_5 # must match WDIO caps
+          avd-name: Pixel_5 # must match your WDIO caps
           force-avd-creation: true
           disable-animations: true
           emulator-boot-timeout: 1200
-          emulator-options: -no-window -no-boot-anim -no-audio -camera-back none -camera-front none
+          emulator-options: >-
+            -no-window -no-boot-anim -no-audio
+             -camera-back none -camera-front none
+             -gpu swiftshader_indirect -accel off
           script: |
-            cd "$GITHUB_WORKSPACE"
+            set -e
+
             echo "PWD: $(pwd)"
             ls -1
 
-            # Ensure UiAutomator2 driver (no-op if already installed)
+            # Ensure UiAutomator2 driver (idempotent)
             npx appium driver list --installed | grep -q uiautomator2 || npx appium driver install uiautomator2 || true
 
-            # Start Appium
-            npx appium --base-path /wd/hub --log-level info & sleep 6
+             # Start Appium and wait a moment
+             npx appium --base-path /wd/hub --log-level info & sleep 6
 
+             # Sanity: device should be 'device' not 'offline'
             adb devices
 
-            # Sanity check WDIO config
-            test -f ./wdio.ci.conf.ts || { echo "wdio.ci.conf.ts not found"; exit 1; }
-
-            # Run native smoke
-            npx wdio run ./wdio.ci.conf.ts --spec ./test/specs/smoke.native.e2e.ts
+             # Run native smoke
+             npx wdio run wdio.ci.conf.ts --spec test/specs/smoke.native.e2e.ts
 
       - name: Generate Allure (native)
         if: ${{ hashFiles('allure-results/**') != '' }}
