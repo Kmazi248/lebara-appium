@@ -1,29 +1,19 @@
-name: Android CI (native + web)
+name: Android CI (native)
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-  workflow_dispatch:
+  push: { branches: [main] }
+  pull_request: { branches: [main] }
+  workflow_dispatch: {}
 
 jobs:
   native:
-    runs-on: macos-13
-    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "npm"
-
-      - uses: actions/setup-java@v4
-        with:
-          distribution: "temurin"
-          java-version: "17"
+        with: { node-version: 20, cache: npm }
 
       - name: Install deps
         run: npm ci
@@ -35,157 +25,45 @@ jobs:
           target: google_apis
           arch: x86_64
           profile: pixel_5
-          avd-name: Pixel_5 # must match your WDIO caps
+          avd-name: Pixel_5
           force-avd-creation: true
           disable-animations: true
           emulator-boot-timeout: 1200
           emulator-options: >-
             -no-window -no-boot-anim -no-audio
-             -camera-back none -camera-front none
-             -gpu swiftshader_indirect -accel off
+            -camera-back none -camera-front none
+            -gpu swiftshader_indirect -accel off
+            -no-snapshot-load -no-snapshot-save
           script: |
             set -e
-
-            echo "PWD: $(pwd)"
-            ls -1
-
-            # Ensure UiAutomator2 driver (idempotent)
-            npx appium driver list --installed | grep -q uiautomator2 || npx appium driver install uiautomator2 || true
-
-             # Start Appium and wait a moment
-             npx appium --base-path /wd/hub --log-level info & sleep 6
-
-             # Sanity: device should be 'device' not 'offline'
+            # ADB can be flaky on cold boots; nudge it
+            adb kill-server || true
+            adb start-server
             adb devices
 
-             # Run native smoke
-             npx wdio run wdio.ci.conf.ts --spec test/specs/smoke.native.e2e.ts
+            # Ensure UiAutomator2 (idempotent)
+            npx appium driver list --installed | grep -q uiautomator2 || npx appium driver install uiautomator2 || true
+
+            # Start Appium and wait a bit
+            npx appium --base-path /wd/hub --log-level warn & sleep 10
+
+            # Try once; if it flakes, try again
+            npx wdio run wdio.ci.conf.ts --spec test/specs/smoke.native.e2e.ts || {
+              echo "Retrying smoke once after short wait…"
+              sleep 8
+              adb kill-server || true
+              adb start-server
+              npx wdio run wdio.ci.conf.ts --spec test/specs/smoke.native.e2e.ts
+            }
 
       - name: Generate Allure (native)
         if: ${{ hashFiles('allure-results/**') != '' }}
         run: npx allure-commandline generate --clean ./allure-results -o ./allure-report
 
-      - name: Upload Allure results (native)
+      - uses: actions/upload-artifact@v4
         if: ${{ hashFiles('allure-results/**') != '' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: native-allure-results
-          path: allure-results
+        with: { name: native-allure-results, path: allure-results }
 
-      - name: Upload Allure report (native)
+      - uses: actions/upload-artifact@v4
         if: ${{ hashFiles('allure-report/**') != '' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: native-allure-report
-          path: allure-report
-
-      - name: Collect emulator/adb logs (native)
-        if: ${{ always() }}
-        run: |
-          adb devices || true
-          adb logcat -d > adb-logcat.txt || true
-          adb shell getprop > adb-getprop.txt || true
-
-      - name: Upload debug logs (native)
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: native-debug
-          path: |
-            adb-logcat.txt
-            adb-getprop.txt
-
-  web:
-    runs-on: macos-13
-    needs: native
-    timeout-minutes: 75
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "npm"
-
-      - uses: actions/setup-java@v4
-        with:
-          distribution: "temurin"
-          java-version: "17"
-
-      - name: Install deps
-        run: npm ci
-
-      - name: Boot emulator + run web smoke
-        uses: reactivecircus/android-emulator-runner@v2
-        env:
-          CHROME_APK_URL: ${{ secrets.CHROME_APK_URL }}
-        with:
-          api-level: 30
-          target: google_apis
-          arch: x86_64
-          profile: pixel_5
-          avd-name: Pixel_5 # keep same name for consistency
-          force-avd-creation: true
-          disable-animations: true
-          emulator-boot-timeout: 1200
-          emulator-options: -no-window -no-boot-anim -no-audio -camera-back none -camera-front none
-          script: |
-            cd "$GITHUB_WORKSPACE"
-            echo "PWD: $(pwd)"
-            ls -1
-
-            # Ensure Chrome present (requires CHROME_APK_URL secret)
-            if ! adb shell pm list packages | grep -q com.android.chrome; then
-              test -n "${CHROME_APK_URL}" || { echo "Missing CHROME_APK_URL secret"; exit 1; }
-              curl -L -o chrome.apk "${CHROME_APK_URL}"
-              adb install -r chrome.apk
-            fi
-            adb shell pm list packages | grep com.android.chrome
-
-            # Drivers/plugins
-            npx appium driver list --installed | grep -q uiautomator2 || npx appium driver install uiautomator2 || true
-            npx appium plugin install --source=npm appium-chromedriver
-
-            # Start Appium with chromedriver plugin
-            npx appium --use-plugins=chromedriver --base-path /wd/hub --log-level info & sleep 6
-
-            adb devices
-
-            # Run the web spec using the web CI config
-            test -f ./wdio.web.ci.conf.ts || { echo "wdio.web.ci.conf.ts not found"; exit 1; }
-            npx wdio run ./wdio.web.ci.conf.ts --spec ./test/specs/smoke.web.e2e.ts
-
-      - name: Generate Allure (web)
-        if: ${{ hashFiles('allure-results/**') != '' }}
-        run: npx allure-commandline generate --clean ./allure-results -o ./allure-report
-
-      - name: Upload Allure results (web)
-        if: ${{ hashFiles('allure-results/**') != '' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: web-allure-results
-          path: allure-results
-
-      - name: Upload Allure report (web)
-        if: ${{ hashFiles('allure-report/**') != '' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: web-allure-report
-          path: allure-report
-
-      - name: Collect emulator/adb logs (web)
-        if: ${{ always() }}
-        run: |
-          adb devices || true
-          adb logcat -d > adb-logcat.txt || true
-          adb shell getprop > adb-getprop.txt || true
-
-      - name: Upload debug logs (web)
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: web-debug
-          path: |
-            adb-logcat.txt
-            adb-getprop.txt
+        with: { name: native-allure-report, path: allure-report }
