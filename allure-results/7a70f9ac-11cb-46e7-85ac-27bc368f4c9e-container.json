@@ -1,0 +1,7 @@
+{
+  "uuid": "7a70f9ac-11cb-46e7-85ac-27bc368f4c9e",
+  "children": ["7b784cfb-1fb3-4a9c-ae8e-28bfabc3da4f"],
+  "befores": [],
+  "afters": [],
+  "name": "Android web smoke"
+}

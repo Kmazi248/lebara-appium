@@ -1,0 +1,35 @@
+{
+  "uuid": "b2f200b1-90ea-4a92-ad3e-4d3898a32ed8",
+  "historyId": "6da9f4dee63edd49cbef7759ccf1056d",
+  "status": "broken",
+  "statusDetails": {
+    "message": "WebDriverError: Error attempting to start URI. Original error: Error: Error executing adbExec. Original error: 'Command ''C:\\Users\\Karl.Mazi\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe' -P 5037 -s emulator-5554 shell am start -W -a android.intent.action.VIEW -d https\\://the-internet.herokuapp.com/login com.android.settings' exited with code 1'; Command output: Starting: Intent { act=android.intent.action.VIEW dat=https://the-internet.herokuapp.com/... pkg=com.android.settings }\r\nError: Activity not started, unable to resolve Intent { act=android.intent.action.VIEW dat=https://the-internet.herokuapp.com/... flg=0x10000000 xflg=0x4 pkg=com.android.settings }\r\n when running \"url\" with method \"POST\" and args \"{\"url\":\"https://the-internet.herokuapp.com/login\"}\"",
+    "trace": "unknown error: WebDriverError: Error attempting to start URI. Original error: Error: Error executing adbExec. Original error: 'Command ''C:\\Users\\Karl.Mazi\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe' -P 5037 -s emulator-5554 shell am start -W -a android.intent.action.VIEW -d https\\://the-internet.herokuapp.com/login com.android.settings' exited with code 1'; Command output: Starting: Intent { act=android.intent.action.VIEW dat=https://the-internet.herokuapp.com/... pkg=com.android.settings }\r\nError: Activity not started, unable to resolve Intent { act=android.intent.action.VIEW dat=https://the-internet.herokuapp.com/... flg=0x10000000 xflg=0x4 pkg=com.android.settings }\r\n when running \"url\" with method \"POST\" and args \"{\"url\":\"https://the-internet.herokuapp.com/login\"}\"\n    at async Browser.wrapCommandFn (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:978:23)\n    at async Browser.url (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\webdriverio\\build\\node.js:5710:3)\n    at async Browser.wrapCommandFn (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:978:23)\n    at async Context.<anonymous> (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\test\\specs\\test.e2e.ts:5:9)\n    at async Context.executeAsync (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:1101:20)\n    at async Context.testFrameworkFnWrapper (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:1173:14)"
+  },
+  "stage": "finished",
+  "steps": [],
+  "attachments": [
+    {
+      "name": "screenshot",
+      "type": "image/png",
+      "source": "fd72068d-52e6-428a-829e-f93d12b400ea-attachment.png"
+    }
+  ],
+  "parameters": [{ "name": "device", "value": "Pixel_8" }],
+  "labels": [
+    { "name": "language", "value": "javascript" },
+    { "name": "framework", "value": "wdio" },
+    {
+      "name": "package",
+      "value": "C:.Users.Karl.Mazi.Documents.Appium.codeset.lebara-appium.test.specs.test.e2e.ts"
+    },
+    { "name": "thread", "value": "0-5" },
+    { "name": "suite", "value": "My Login application" },
+    { "name": "feature", "value": "My Login application" }
+  ],
+  "links": [],
+  "start": 1757207737256,
+  "name": "should login with valid credentials",
+  "testCaseId": "6da9f4dee63edd49cbef7759ccf1056d",
+  "stop": 1757207739925
+}

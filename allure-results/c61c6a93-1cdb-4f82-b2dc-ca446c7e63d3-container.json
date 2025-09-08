@@ -1,0 +1,7 @@
+{
+  "uuid": "c61c6a93-1cdb-4f82-b2dc-ca446c7e63d3",
+  "children": ["23a416c3-cfa0-4589-97ac-974c82f0dae9"],
+  "befores": [],
+  "afters": [],
+  "name": "Android native smoke"
+}

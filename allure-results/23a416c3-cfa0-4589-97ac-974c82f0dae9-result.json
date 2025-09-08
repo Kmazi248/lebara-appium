@@ -1,0 +1,26 @@
+{
+  "uuid": "23a416c3-cfa0-4589-97ac-974c82f0dae9",
+  "historyId": "1125874aaefde139659e310019589f82",
+  "status": "passed",
+  "statusDetails": {},
+  "stage": "finished",
+  "steps": [],
+  "attachments": [],
+  "parameters": [{ "name": "device", "value": "Pixel_8" }],
+  "labels": [
+    { "name": "language", "value": "javascript" },
+    { "name": "framework", "value": "wdio" },
+    {
+      "name": "package",
+      "value": "C:.Users.Karl.Mazi.Documents.Appium.codeset.lebara-appium.test.specs.smoke.native.e2e.ts"
+    },
+    { "name": "thread", "value": "0-3" },
+    { "name": "suite", "value": "Android native smoke" },
+    { "name": "feature", "value": "Android native smoke" }
+  ],
+  "links": [],
+  "start": 1757207716470,
+  "name": "opens Settings and confirms package",
+  "testCaseId": "1125874aaefde139659e310019589f82",
+  "stop": 1757207719652
+}

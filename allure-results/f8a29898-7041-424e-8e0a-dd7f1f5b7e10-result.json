@@ -1,0 +1,35 @@
+{
+  "uuid": "f8a29898-7041-424e-8e0a-dd7f1f5b7e10",
+  "historyId": "2b511b5fa8d449dae00479e02bed0032",
+  "status": "broken",
+  "statusDetails": {
+    "message": "WebDriverError: Error attempting to start URI. Original error: Error: Error executing adbExec. Original error: 'Command ''C:\\Users\\Karl.Mazi\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe' -P 5037 -s emulator-5554 shell am start -W -a android.intent.action.VIEW -d https\\://www.saucedemo.com/ com.android.settings' exited with code 1'; Command output: Starting: Intent { act=android.intent.action.VIEW dat=https://www.saucedemo.com/... pkg=com.android.settings }\r\nError: Activity not started, unable to resolve Intent { act=android.intent.action.VIEW dat=https://www.saucedemo.com/... flg=0x10000000 xflg=0x4 pkg=com.android.settings }\r\n when running \"url\" with method \"POST\" and args \"{\"url\":\"https://www.saucedemo.com/\"}\"",
+    "trace": "unknown error: WebDriverError: Error attempting to start URI. Original error: Error: Error executing adbExec. Original error: 'Command ''C:\\Users\\Karl.Mazi\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe' -P 5037 -s emulator-5554 shell am start -W -a android.intent.action.VIEW -d https\\://www.saucedemo.com/ com.android.settings' exited with code 1'; Command output: Starting: Intent { act=android.intent.action.VIEW dat=https://www.saucedemo.com/... pkg=com.android.settings }\r\nError: Activity not started, unable to resolve Intent { act=android.intent.action.VIEW dat=https://www.saucedemo.com/... flg=0x10000000 xflg=0x4 pkg=com.android.settings }\r\n when running \"url\" with method \"POST\" and args \"{\"url\":\"https://www.saucedemo.com/\"}\"\n    at async Browser.wrapCommandFn (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:978:23)\n    at async Browser.url (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\webdriverio\\build\\node.js:5710:3)\n    at async Browser.wrapCommandFn (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:978:23)\n    at async AuthScreen.open (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\src\\screens\\auth.screen.ts:11:20)\n    at async Context.<anonymous> (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\test\\specs\\sanity.som.e2e.ts:7:9)\n    at async Context.executeAsync (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:1101:20)\n    at async Context.testFrameworkFnWrapper (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:1173:14)"
+  },
+  "stage": "finished",
+  "steps": [],
+  "attachments": [
+    {
+      "name": "screenshot",
+      "type": "image/png",
+      "source": "971ce6f8-07ba-4659-a195-02809a1324b4-attachment.png"
+    }
+  ],
+  "parameters": [{ "name": "device", "value": "Pixel_8" }],
+  "labels": [
+    { "name": "language", "value": "javascript" },
+    { "name": "framework", "value": "wdio" },
+    {
+      "name": "package",
+      "value": "C:.Users.Karl.Mazi.Documents.Appium.codeset.lebara-appium.test.specs.sanity.som.e2e.ts"
+    },
+    { "name": "thread", "value": "0-2" },
+    { "name": "suite", "value": "SOM scaffold" },
+    { "name": "feature", "value": "SOM scaffold" }
+  ],
+  "links": [],
+  "start": 1757207705794,
+  "name": "opens login and sees username",
+  "testCaseId": "2b511b5fa8d449dae00479e02bed0032",
+  "stop": 1757207709220
+}

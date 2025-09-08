@@ -1,0 +1,35 @@
+{
+  "uuid": "7b784cfb-1fb3-4a9c-ae8e-28bfabc3da4f",
+  "historyId": "dee33892d7a3dae9551896c63e5a5caf",
+  "status": "broken",
+  "statusDetails": {
+    "message": "WebDriverError: Error attempting to start URI. Original error: Error: Error executing adbExec. Original error: 'Command ''C:\\Users\\Karl.Mazi\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe' -P 5037 -s emulator-5554 shell am start -W -a android.intent.action.VIEW -d https\\://example.com/ com.android.settings' exited with code 1'; Command output: Starting: Intent { act=android.intent.action.VIEW dat=https://example.com/... pkg=com.android.settings }\r\nError: Activity not started, unable to resolve Intent { act=android.intent.action.VIEW dat=https://example.com/... flg=0x10000000 xflg=0x4 pkg=com.android.settings }\r\n when running \"url\" with method \"POST\" and args \"{\"url\":\"https://example.com/\"}\"",
+    "trace": "unknown error: WebDriverError: Error attempting to start URI. Original error: Error: Error executing adbExec. Original error: 'Command ''C:\\Users\\Karl.Mazi\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe' -P 5037 -s emulator-5554 shell am start -W -a android.intent.action.VIEW -d https\\://example.com/ com.android.settings' exited with code 1'; Command output: Starting: Intent { act=android.intent.action.VIEW dat=https://example.com/... pkg=com.android.settings }\r\nError: Activity not started, unable to resolve Intent { act=android.intent.action.VIEW dat=https://example.com/... flg=0x10000000 xflg=0x4 pkg=com.android.settings }\r\n when running \"url\" with method \"POST\" and args \"{\"url\":\"https://example.com/\"}\"\n    at async Browser.wrapCommandFn (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:978:23)\n    at async Browser.url (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\webdriverio\\build\\node.js:5710:3)\n    at async Browser.wrapCommandFn (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:978:23)\n    at async Context.<anonymous> (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\test\\specs\\smoke.web.e2e.ts:3:5)\n    at async Context.executeAsync (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:1101:20)\n    at async Context.testFrameworkFnWrapper (C:\\Users\\Karl.Mazi\\Documents\\Appium\\codeset\\lebara-appium\\node_modules\\@wdio\\utils\\build\\index.js:1173:14)"
+  },
+  "stage": "finished",
+  "steps": [],
+  "attachments": [
+    {
+      "name": "screenshot",
+      "type": "image/png",
+      "source": "5d3f0b66-4caa-4c43-a422-974e89d03c5f-attachment.png"
+    }
+  ],
+  "parameters": [{ "name": "device", "value": "Pixel_8" }],
+  "labels": [
+    { "name": "language", "value": "javascript" },
+    { "name": "framework", "value": "wdio" },
+    {
+      "name": "package",
+      "value": "C:.Users.Karl.Mazi.Documents.Appium.codeset.lebara-appium.test.specs.smoke.web.e2e.ts"
+    },
+    { "name": "thread", "value": "0-4" },
+    { "name": "suite", "value": "Android web smoke" },
+    { "name": "feature", "value": "Android web smoke" }
+  ],
+  "links": [],
+  "start": 1757207726853,
+  "name": "loads example.com",
+  "testCaseId": "dee33892d7a3dae9551896c63e5a5caf",
+  "stop": 1757207729332
+}
