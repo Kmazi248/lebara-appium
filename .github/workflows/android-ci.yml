@@ -12,13 +12,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
-        with: { node-version: 20, cache: npm }
+        with:
+          node-version: 20
+          cache: npm
 
       - name: Install deps
         run: npm ci
 
+      # Boots an emulator and runs your WDIO native smoke inside the action
       - name: Boot emulator + run native smoke
+        # If you absolutely need green for a demo, uncomment the next line:
+        # continue-on-error: true
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 30
@@ -27,7 +33,7 @@ jobs:
           profile: pixel_5
           avd-name: Pixel_5
           force-avd-creation: true
-          disable-animations: true
+          disable-animations: false # avoid flaky built-in toggle
           emulator-boot-timeout: 1200
           emulator-options: >-
             -no-window -no-boot-anim -no-audio
@@ -36,22 +42,29 @@ jobs:
             -no-snapshot-load -no-snapshot-save
           script: |
             set -e
-            # ADB can be flaky on cold boots; nudge it
+
+            # ADB can be flaky on cold boots; ensure it's up
             adb kill-server || true
             adb start-server
+            adb wait-for-device
             adb devices
 
-            # Ensure UiAutomator2 (idempotent)
+            # Best-effort unlock + turn animations off (don't fail if it hiccups)
+            adb shell input keyevent 82 || true
+            for s in window_animation_scale transition_animation_scale animator_duration_scale; do
+              adb shell settings put global $s 0 || true
+            done
+
+            # Ensure UiAutomator2 driver (idempotent)
             npx appium driver list --installed | grep -q uiautomator2 || npx appium driver install uiautomator2 || true
 
-            # Start Appium and wait a bit
+            # Start Appium and give it a moment
             npx appium --base-path /wd/hub --log-level warn & sleep 10
 
-            # Try once; if it flakes, try again
+            # Run smoke; retry once if it flakes
             npx wdio run wdio.ci.conf.ts --spec test/specs/smoke.native.e2e.ts || {
-              echo "Retrying smoke once after short wait…"
+              echo "Retrying smoke once…"
               sleep 8
-              adb kill-server || true
               adb start-server
               npx wdio run wdio.ci.conf.ts --spec test/specs/smoke.native.e2e.ts
             }
@@ -60,10 +73,16 @@ jobs:
         if: ${{ hashFiles('allure-results/**') != '' }}
         run: npx allure-commandline generate --clean ./allure-results -o ./allure-report
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Allure results (native)
         if: ${{ hashFiles('allure-results/**') != '' }}
-        with: { name: native-allure-results, path: allure-results }
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-allure-results
+          path: allure-results
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Allure report (native)
         if: ${{ hashFiles('allure-report/**') != '' }}
-        with: { name: native-allure-report, path: allure-report }
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-allure-report
+          path: allure-report
