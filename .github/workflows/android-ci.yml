@@ -34,7 +34,7 @@ jobs:
           api-level: 30
           target: google_apis
           arch: x86_64
-          profile: pixel_5
+          profile: pixel_8
           force-avd-creation: true
           disable-animations: true
           emulator-boot-timeout: 1200
@@ -43,9 +43,17 @@ jobs:
             # Defensive guard: install only if not already present
             npx appium driver list --installed | grep -q uiautomator2 || npx appium driver install uiautomator2 || true
 
+            # Start Appium
             npx appium --base-path /wd/hub --log-level info & sleep 6
+
+            # Attach WDIO to the pre-booted emulator
             adb devices
-            npx wdio run wdio.conf.ts --spec test/specs/smoke.native.e2e.ts
+            export ANDROID_SERIAL=$(adb devices | awk 'NR==2{print $1}')
+            test -n "$ANDROID_SERIAL" || { echo "No emulator serial found"; adb devices; exit 1; }
+            echo "Using ANDROID_SERIAL=$ANDROID_SERIAL"
+
+            # CI-specific WDIO config
+            npx wdio run wdio.ci.conf.ts --spec test/specs/smoke.native.e2e.ts
 
       - name: Generate Allure (native)
         if: ${{ hashFiles('allure-results/**') != '' }}
@@ -116,6 +124,7 @@ jobs:
           emulator-boot-timeout: 1200
           emulator-options: -no-window -no-boot-anim -no-audio -camera-back none -camera-front none
           script: |
+            # Ensure Chrome present
             if ! adb shell pm list packages | grep -q com.android.chrome; then
               test -n "${CHROME_APK_URL}" || { echo "Missing CHROME_APK_URL secret"; exit 1; }
               curl -L -o chrome.apk "${CHROME_APK_URL}"
@@ -126,11 +135,20 @@ jobs:
             # Defensive guard for UiAutomator2 driver
             npx appium driver list --installed | grep -q uiautomator2 || npx appium driver install uiautomator2 || true
 
+            # Chromedriver plugin for web testing
             npx appium plugin install --source=npm appium-chromedriver
+
+            # Start Appium with plugin
             npx appium --use-plugins=chromedriver --base-path /wd/hub --log-level info & sleep 6
 
+            # Attach WDIO to the pre-booted emulator
             adb devices
-            npx wdio run wdio.conf.ts --spec test/specs/smoke.web.e2e.ts
+            export ANDROID_SERIAL=$(adb devices | awk 'NR==2{print $1}')
+            test -n "$ANDROID_SERIAL" || { echo "No emulator serial found"; adb devices; exit 1; }
+            echo "Using ANDROID_SERIAL=$ANDROID_SERIAL"
+
+            # CI-specific WDIO config
+            npx wdio run wdio.ci.conf.ts --spec test/specs/smoke.web.e2e.ts
 
       - name: Generate Allure (web)
         if: ${{ hashFiles('allure-results/**') != '' }}
